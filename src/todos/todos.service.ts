@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { TodoDto } from './dto/todo.dto'
 import { Todos } from './entities/todos.entity'
 import { ConfigService } from '@nestjs/config'
@@ -25,7 +25,7 @@ export class TodosService {
 	async update({ name, description, date, time }: TodoDto, id: number) {
 		const todo = await this.todoRepository.findOneBy({ id })
 		if (!todo) {
-			throw new BadRequestException()
+			throw new NotFoundException()
 		}
 		const newTodo = await this.todoRepository.update(
 			{ id },
@@ -36,7 +36,7 @@ export class TodosService {
 	async delete(id: number) {
 		const todo = await this.todoRepository.delete({ id })
 		if (!todo.affected) {
-			throw new BadRequestException()
+			throw new NotFoundException()
 		}
 		return 'Success'
 	}
@@ -52,7 +52,7 @@ export class TodosService {
 	async getOne(id: number) {
 		const todo = await this.todoRepository.findOneBy({ id })
 		if (!todo) {
-			throw new BadRequestException()
+			throw new NotFoundException()
 		}
 		return todo
 	}

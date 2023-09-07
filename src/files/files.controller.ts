@@ -4,7 +4,8 @@ import {
 	ApiTags,
 	ApiResponse,
 	ApiBearerAuth,
-	ApiConsumes
+	ApiConsumes,
+	ApiOperation
 } from '@nestjs/swagger'
 import {
 	Controller,
@@ -13,6 +14,7 @@ import {
 	UseInterceptors,
 	UploadedFile,
 	UploadedFiles,
+	HttpCode,
 	Res,
 	Param,
 	Req,
@@ -28,7 +30,11 @@ import { Repository } from 'typeorm'
 import { Request } from 'express'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
 import { ResProfileDto } from 'src/profile/dto/resProfile.dto'
-import { ExceptionBadRequest, ExceptionUnauthorized } from 'src/types/indes'
+import {
+	ExceptionBadRequest,
+	ExceptionServerInternal,
+	ExceptionUnauthorized
+} from 'src/types/indes'
 
 class FileUploadDto {
 	@ApiProperty({ type: 'string', format: 'binary' })
@@ -38,6 +44,7 @@ class FileUploadDto {
 @ApiBearerAuth()
 @ApiResponse({ status: 401, type: ExceptionUnauthorized })
 @ApiResponse({ status: 400, type: ExceptionBadRequest })
+@ApiResponse({ status: 500, type: ExceptionServerInternal })
 @UseGuards(JwtAuthGuard)
 @Controller('files')
 export class FilesController {
@@ -45,6 +52,7 @@ export class FilesController {
 		@InjectRepository(Profiles) private profileRepository: Repository<Profiles>
 	) {}
 	@ApiConsumes('multipart/form-data')
+	@ApiOperation({ summary: 'Upload user avatar' })
 	@ApiBody({
 		description: 'Image with extends png , jpg , gif',
 		type: FileUploadDto
@@ -54,6 +62,7 @@ export class FilesController {
 		type: ResProfileDto,
 		description: 'Profile user with new avatar'
 	})
+	@HttpCode(201)
 	@Post('upload')
 	@UseInterceptors(
 		FileInterceptor('image', {

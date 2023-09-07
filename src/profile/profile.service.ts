@@ -3,7 +3,7 @@ import { ProfileDto } from './dto/profile.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Profiles } from './entities/profiles.entity'
 import { Repository } from 'typeorm'
-
+import { BadRequestException, NotFoundException } from '@nestjs/common'
 @Injectable()
 export class ProfileService {
 	constructor(
@@ -37,5 +37,12 @@ export class ProfileService {
 	async getAvatar(user: any) {
 		const avatar = await this.profileRepository.findOneBy({ userId: user.id })
 		return avatar.avatar
+	}
+	async getProfile(user: any) {
+		const profile = await this.profileRepository.findOneBy({ userId: user.id })
+		if (!profile) {
+			throw new NotFoundException()
+		}
+		return profile
 	}
 }

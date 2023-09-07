@@ -2,11 +2,15 @@ import {
 	ApiTags,
 	ApiResponse,
 	ApiBearerAuth,
-	ApiCookieAuth
+	ApiCookieAuth,
+	ApiOperation,
+	ApiBody,
+	ApiParam
 } from '@nestjs/swagger'
 import {
 	Controller,
 	Get,
+	Patch,
 	Post,
 	Body,
 	HttpCode,
@@ -22,17 +26,24 @@ import { SignInDto } from './dto/signin.dto'
 import { LocalAuthGuard } from './local-auth.guard'
 import { JwtAuthGuard } from './jwt-auth.guard'
 import { Request, Response } from 'express'
-import { ExceptionBadRequest, ExceptionUnauthorized } from 'src/types/indes'
-import { AuthDto, TokensDto } from './dto/auth.dto'
+import {
+	ExceptionBadRequest,
+	ExceptionServerInternal,
+	ExceptionUnauthorized
+} from 'src/types/indes'
+import { AuthDto, TokensDto, UserDto } from './dto/auth.dto'
+import { PassDto } from './dto/pass.dto'
 @ApiTags('Auth')
 @UsePipes(new ValidationPipe({ transform: true }))
 @ApiResponse({ status: 401, type: ExceptionUnauthorized })
 @ApiResponse({ status: 400, type: ExceptionBadRequest })
+@ApiResponse({ status: 500, type: ExceptionServerInternal })
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
-	@HttpCode(201)
-	@ApiResponse({ status: 201, type: AuthDto })
+	@HttpCode(200)
+	@ApiResponse({ status: 200, type: AuthDto })
+	@ApiOperation({ summary: 'Login user' })
 	@Post('login')
 	async login(
 		@Body() signInDto: SignInDto,
@@ -53,6 +64,7 @@ export class AuthController {
 		return res
 	}
 	@HttpCode(201)
+	@ApiOperation({ summary: 'Register user' })
 	@ApiResponse({ status: 201, type: AuthDto })
 	@Post('register')
 	async register(
@@ -69,12 +81,14 @@ export class AuthController {
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
 	@HttpCode(200)
+	@ApiOperation({ summary: 'Logout user' })
 	@Get('logout')
 	logout(@Req() req) {
 		return this.authService.logout(req.user)
 	}
 	@HttpCode(200)
-	@ApiResponse({ status: 201, type: TokensDto })
+	@ApiResponse({ status: 200, type: TokensDto })
+	@ApiOperation({ summary: 'Refresh bearer token' })
 	@Get('refresh')
 	async refresh(
 		@Req() req: Request,
@@ -90,5 +104,23 @@ export class AuthController {
 			httpOnly: true
 		})
 		return { ...tokens }
+	}
+	@HttpCode(200)
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiResponse({ status: 200, type: UserDto })
+	@ApiOperation({ summary: 'Update user email' })
+	@Patch('update-email')
+	updateEmail(@Req() req: Request, @Body() signInDto: SignInDto) {
+		return this.authService.updateEmail(req.user, signInDto)
+	}
+	@HttpCode(200)
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiResponse({ status: 200, type: UserDto })
+	@ApiOperation({ summary: 'Update user password' })
+	@Patch('update-pass')
+	updatePassword(@Req() req: Request, @Body() passDto: PassDto) {
+		return this.authService.updatePassword(req.user, passDto)
 	}
 }

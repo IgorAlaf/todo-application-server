@@ -14,6 +14,8 @@ import jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
 import { ITokens } from 'src/types/indes'
 import { AuthDto } from 'src/auth/dto/auth.dto'
+import { SignInDto } from 'src/auth/dto/signin.dto'
+import { PassDto } from 'src/auth/dto/pass.dto'
 @Injectable()
 export class UsersService {
 	constructor(
@@ -37,8 +39,8 @@ export class UsersService {
 		await this.userRepository.save(newUser)
 		const tokens = await this.createJwtTokens({ email, id: newUser.id })
 		const newTokens = await this.createTokens(newUser.id, tokens)
-		const userResponse: { email: string; id: number } = { ...newUser }
-		return { ...tokens, user: userResponse }
+		// const userResponse: { email: string; id: number } = { ...newUser }
+		return { ...tokens, user: { email: newUser.email, id: newUser.id } }
 	}
 	async createTokens(
 		userId: number,
@@ -69,7 +71,7 @@ export class UsersService {
 	}): Promise<ITokens> {
 		const accessToken = this.jwtService.sign(payload, {
 			secret: this.configService.get('SECRET_KEY'),
-			expiresIn: '10m'
+			expiresIn: '60m'
 		})
 		const refreshToken = this.jwtService.sign(payload, {
 			secret: this.configService.get('SECRET_KEY'),
@@ -93,5 +95,29 @@ export class UsersService {
 		} catch (e) {
 			throw new InternalServerErrorException()
 		}
+	}
+	async updateEmail(user: any, signInDto: SignInDto) {
+		const userExists = await this.userRepository.findOneBy({ id: user.id })
+		const equal = await bcrypt.compare(signInDto.password, userExists.password)
+		if (!equal) {
+			throw new BadRequestException()
+		}
+		await this.userRepository.update(
+			{ id: user.id },
+			{ email: signInDto.email }
+		)
+		const userNew = await this.userRepository.findOneBy({ id: user.id })
+		return { email: userNew.email, id: userNew.id }
+	}
+	async updatePassword(user: any, passDto: PassDto) {
+		const userExists = await this.userRepository.findOneBy({ id: user.id })
+		const equal = await bcrypt.compare(passDto.password, userExists.password)
+		if (!equal) {
+			throw new BadRequestException()
+		}
+		const hash = await bcrypt.hash(passDto.newPassword, 3)
+		await this.userRepository.update({ id: user.id }, { password: hash })
+		const userNew = await this.userRepository.findOneBy({ id: user.id })
+		return { email: userNew.email, id: userNew.id }
 	}
 }

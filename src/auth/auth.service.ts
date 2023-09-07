@@ -1,9 +1,11 @@
+import { PassDto } from './dto/pass.dto'
 import { UsersService } from './../users/users.service'
 import { Injectable, BadRequestException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Users } from 'src/users/entities/user.entity'
 import { AuthDto } from './dto/auth.dto'
 import * as bcrypt from 'bcrypt'
+import { SignInDto } from './dto/signin.dto'
 @Injectable()
 export class AuthService {
 	constructor(
@@ -48,5 +50,11 @@ export class AuthService {
 			return null
 		}
 		return user
+	}
+	async updateEmail(user: any, signInDto: SignInDto) {
+		return this.usersService.updateEmail(user, signInDto)
+	}
+	async updatePassword(user: any, passDto: PassDto) {
+		return this.usersService.updatePassword(user, passDto)
 	}
 }
