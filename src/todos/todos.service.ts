@@ -11,25 +11,32 @@ export class TodosService {
 		@InjectRepository(Todos) private todoRepository: Repository<Todos>,
 		private configService: ConfigService
 	) {}
-	async create({ name, description, date, time }: TodoDto, userId: number) {
+	async create(
+		{ title, description, date, time, checked }: TodoDto,
+		userId: number
+	) {
 		const todo = await this.todoRepository.create({
-			name,
+			title,
 			description,
 			date,
 			time,
-			userId
+			userId,
+			checked
 		})
 		await this.todoRepository.save(todo)
 		return todo
 	}
-	async update({ name, description, date, time }: TodoDto, id: number) {
+	async update(
+		{ title, description, date, time, checked }: TodoDto,
+		id: number
+	) {
 		const todo = await this.todoRepository.findOneBy({ id })
 		if (!todo) {
 			throw new NotFoundException()
 		}
 		const newTodo = await this.todoRepository.update(
 			{ id },
-			{ date, name, description, time }
+			{ date, title, description, time, checked }
 		)
 		return this.todoRepository.findOneBy({ id })
 	}
@@ -56,13 +63,12 @@ export class TodosService {
 		}
 		return todo
 	}
-	async search(userId: number, line: string) {
+	async search(userId: number, title: string) {
 		const todos = await this.todoRepository.find({
 			where: {
 				userId
 			}
 		})
-		console.log(todos)
-		return todos.filter(item => item.name.includes(line))
+		return todos.filter(item => item.title.includes(title))
 	}
 }

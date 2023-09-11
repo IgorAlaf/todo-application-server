@@ -36,7 +36,12 @@ export class AuthService {
 			id: token.id
 		})
 		this.usersService.createTokens(token.id, tokens)
-		return { ...tokens }
+		const user = await this.usersService.findOne(token.email)
+		const payload: { email: string; id: number } = {
+			email: user.email,
+			id: user.id
+		}
+		return { user: payload, ...tokens }
 	}
 
 	async validateUser(email: string, password: string): Promise<Users | null> {

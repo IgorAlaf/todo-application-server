@@ -30,10 +30,8 @@ import { FilesModule } from './files/files.module'
 				username: configService.get('DATABASE_USER'),
 				password: configService.get('DATABASE_PASSWORD'),
 				database: configService.get('DATABASE_NAME'),
-				entities: [Users, Tokens, Todos, Profiles],
-				synchronize: true
+				entities: [Users, Tokens, Todos, Profiles]
 			}),
-
 			inject: [ConfigService]
 		}),
 		ProfileModule,

@@ -18,7 +18,7 @@ export class ProfileDto {
 		example: '2023-09-07'
 	})
 	@IsString()
-	dateOfBirth: Date
+	dateOfBirth: string
 	@MinLength(2)
 	@ApiProperty({
 		description: 'Field with user surname',

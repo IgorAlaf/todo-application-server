@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm'
 
 @Entity()
 export class Profiles {
-	@PrimaryGeneratedColumn()
+	@PrimaryGeneratedColumn({ name: 'profile_id' })
 	id: number
 	@Column()
 	name: string
@@ -12,7 +12,7 @@ export class Profiles {
 	@Column()
 	patronymic: string
 	@Column({ name: 'date_of_birth' })
-	dateOfBirth: Date
+	dateOfBirth: string
 	@Column()
 	sex: string
 	@Column()

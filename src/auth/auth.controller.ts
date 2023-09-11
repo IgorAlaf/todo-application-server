@@ -83,11 +83,12 @@ export class AuthController {
 	@HttpCode(200)
 	@ApiOperation({ summary: 'Logout user' })
 	@Get('logout')
-	logout(@Req() req) {
+	logout(@Req() req, @Res({ passthrough: true }) res: Response) {
+		res.clearCookie('refreshToken')
 		return this.authService.logout(req.user)
 	}
 	@HttpCode(200)
-	@ApiResponse({ status: 200, type: TokensDto })
+	@ApiResponse({ status: 200, type: AuthDto })
 	@ApiOperation({ summary: 'Refresh bearer token' })
 	@Get('refresh')
 	async refresh(

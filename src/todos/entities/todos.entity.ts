@@ -3,17 +3,19 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
 
 @Entity()
 export class Todos {
-	@PrimaryGeneratedColumn()
+	@PrimaryGeneratedColumn({ name: 'todo_id' })
 	id: number
 	@Column()
-	name: string
+	title: string
+	@Column({ name: 'user_id' })
+	// @ManyToOne(() => Users, user => user.id)
+	userId: number
 	@Column()
 	description: string
 	@Column({ name: 'task_date' })
 	date: string
 	@Column({ name: 'task_time' })
 	time: string
-	@Column({ name: 'user_id' })
-	@ManyToOne(type => Users, user => user.id)
-	userId: number
+	@Column()
+	checked: boolean
 }

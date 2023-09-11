@@ -3,7 +3,7 @@ import { Users } from './user.entity'
 
 @Entity()
 export class Tokens {
-	@PrimaryGeneratedColumn()
+	@PrimaryGeneratedColumn({ name: 'token_id' })
 	id: number
 	@Column({ name: 'access_token' })
 	accessToken: string

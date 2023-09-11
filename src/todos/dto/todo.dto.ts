@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString, MaxLength, MinLength } from 'class-validator'
+import { IsBoolean, IsString, MaxLength, MinLength } from 'class-validator'
 export class TodoDto {
 	@ApiProperty({
 		description: 'Todo title',
@@ -11,7 +11,7 @@ export class TodoDto {
 	@IsString()
 	@MaxLength(50)
 	@MinLength(1)
-	name: string
+	title: string
 	@ApiProperty({
 		description: 'Todo description',
 		example: 'Cook tasty food',
@@ -35,4 +35,11 @@ export class TodoDto {
 	})
 	@IsString()
 	time: string
+	@ApiProperty({
+		description: 'Check of todo',
+		example: true,
+		default: false
+	})
+	@IsBoolean()
+	checked: boolean
 }

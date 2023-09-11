@@ -73,11 +73,11 @@ export class TodosController {
 		return this.todosService.getAll(req.user.id)
 	}
 	@Get('search')
-	@ApiQuery({ name: 'line', example: 'dinner', required: false })
+	@ApiQuery({ name: 'title', example: 'dinner', required: true })
 	@ApiOperation({ summary: 'Get tasks by title' })
 	@ApiResponse({ status: 200, type: [ResTodoDto] })
 	search(@Req() req) {
-		return this.todosService.search(req.user.id, req.query.line as string)
+		return this.todosService.search(req.user.id, req.query.title as string)
 	}
 	@ApiResponse({ status: 200, type: ResTodoDto })
 	@ApiOperation({ summary: 'Get task by id' })
