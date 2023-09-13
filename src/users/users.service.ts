@@ -102,6 +102,12 @@ export class UsersService {
 		if (!equal) {
 			throw new BadRequestException()
 		}
+		const before = await this.userRepository.findOneBy({
+			email: signInDto.email
+		})
+		if (before) {
+			throw new BadRequestException()
+		}
 		await this.userRepository.update(
 			{ id: user.id },
 			{ email: signInDto.email }
