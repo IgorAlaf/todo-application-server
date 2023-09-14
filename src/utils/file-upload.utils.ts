@@ -1,4 +1,6 @@
 import { extname } from 'path'
+import utf8 from 'utf8'
+import { v4 as uuidv4 } from 'uuid'
 import { HttpException, HttpStatus } from '@nestjs/common'
 // Разрешить только изображения
 export const imageFileFilter = (req, file, callback) => {
@@ -14,11 +16,7 @@ export const imageFileFilter = (req, file, callback) => {
 	callback(null, true)
 }
 export const editFileName = (req, file, callback) => {
-	const name = file.originalname.split('.')[0]
+	const name = uuidv4()
 	const fileExtName = extname(file.originalname)
-	const randomName = Array(4)
-		.fill(null)
-		.map(() => Math.round(Math.random() * 10).toString(10))
-		.join('')
-	callback(null, `${name}${randomName}${fileExtName}`)
+	callback(null, `${name}${fileExtName}`)
 }

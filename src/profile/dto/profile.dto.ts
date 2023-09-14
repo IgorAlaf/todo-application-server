@@ -52,11 +52,11 @@ export class ProfileDto {
 	@ApiProperty({
 		description: 'Field with user phone',
 		default: '-',
-		example: '+88005553535',
-		minLength: 12,
-		maxLength: 12
+		example: '+7 (914) 172-72-67',
+		minLength: 18,
+		maxLength: 18
 	})
-	@Length(12)
+	@Length(18)
 	@IsString()
 	phone: string
 }

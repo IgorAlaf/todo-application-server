@@ -58,7 +58,10 @@ export class ProfileController {
 		const avatar = await this.profileService.getAvatar(req.user)
 		const response = avatar
 			? res.sendFile(avatar, { root: './uploads' })
-			: res.sendFile('standart.png', { root: './uploads' })
+			: res.sendFile('standart.png', {
+					root: './uploads',
+					headers: { 'content-type': 'image/jpg' }
+			  })
 		return {
 			data: response
 		}
