@@ -78,7 +78,10 @@ export class FilesController {
 			originalname: file.originalname,
 			filename: file.filename
 		}
-		const exists = this.profileRepository.findOneBy({ userId: req.user.id })
+		const exists = await this.profileRepository.findOneBy({
+			userId: req.user.id
+		})
+		console.log(exists)
 		if (exists) {
 			const response = await this.profileRepository.update(
 				{ userId: req.user.id },
@@ -86,10 +89,18 @@ export class FilesController {
 			)
 			return this.profileRepository.findOneBy({ userId: req.user.id })
 		}
+
 		const response = await this.profileRepository.create({
 			userId: req.user.id,
-			avatar: res.filename
+			avatar: res.filename,
+			name: '',
+			dateOfBirth: '',
+			phone: '',
+			surname: '',
+			patronymic: '',
+			sex: ''
 		})
+		await this.profileRepository.save(response)
 		return response
 	}
 }

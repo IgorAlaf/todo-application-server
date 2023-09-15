@@ -36,6 +36,9 @@ export class ProfileService {
 	}
 	async getAvatar(user: any) {
 		const avatar = await this.profileRepository.findOneBy({ userId: user.id })
+		if (!avatar) {
+			throw new NotFoundException()
+		}
 		return avatar.avatar
 	}
 	async getProfile(user: any) {
